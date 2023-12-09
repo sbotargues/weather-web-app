@@ -1,18 +1,21 @@
 # Weather App
 
 ## Description
-This Weather App is a React-based web application that provides real-time weather information and a 6-day forecast. Users can search for weather updates by city or use their current location to receive current weather conditions and a forecast for the upcoming week.
+
+This Weather App is a React-based web application that provides real-time weather information and a 5-day forecast. Users can search for weather updates by city or use their current location to receive current weather conditions and a forecast for the upcoming week.
 
 Live App: [Weather Web App](https://weather-web-app-kappa.vercel.app/)
 
 ## Getting Started
 
 ### Prerequisites
+
 Before you begin, ensure you have met the following requirements:
 
 - You have installed the latest version of Node.js and npm.
 
 ### Installing Weather App
+
 To install Weather App, follow these steps:
 
 1. Clone the repository: `git clone https://github.com/sbotargues/weather-web-app.git`
@@ -20,6 +23,7 @@ To install Weather App, follow these steps:
 3. Install dependencies: `npm install`
 
 ### Using Weather App
+
 To start using Weather App, follow these steps:
 
 - Run the application: `npm run start`
@@ -36,10 +40,10 @@ To start using Weather App, follow these steps:
 - **Error Handling**: Robust error handling for API calls and geolocation services.
 
 ## Styling
+
 The component is styled using WeatherComponent.css, focusing on a clean and user-friendly interface that complements the application's functionality.
 
 ## Future Improvements
 
-- **Subcomponent Refactoring**: Further refactor the code into smaller subcomponents (e.g., WeatherDetails, WeatherBackground) for better maintainability and readability.
-- **Custom Hook for API Calls**: Implement a custom hook for API calls to streamline data fetching and state management.
+- **Subcomponent Refactoring**: Further refactor the code into smaller subcomponents for better maintainability and readability.
 - **Enhanced Error Reporting**: Introduce more user-friendly error messages and notifications for a better user experience.

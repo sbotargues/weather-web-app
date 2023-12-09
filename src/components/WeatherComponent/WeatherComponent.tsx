@@ -1,128 +1,123 @@
-import React, { useState, useEffect } from "react";
+// src/components/WeatherComponent.tsx
+import React, { useState, useRef, useCallback } from "react";
 import "./WeatherComponent.css";
-import clear from "../Assets/clear.png";
-import cloud from "../Assets/cloud.png";
-import drizzle from "../Assets/drizzle.png";
-import rain from "../Assets/rain.png";
-import wind from "../Assets/wind.png";
-import snow from "../Assets/snow.png";
-import humidityIcon from "../Assets/humidity.png";
-import whiteSearch from "../Assets/whiteSearch.png";
-import { ForecastItem, WeatherBackgroundMap, WeatherData } from "../Types/Types";
+import cloud from "../../Assets/cloud.png";
+import wind from "../../Assets/wind.png";
+import humidityIcon from "../../Assets/humidity.png";
+import whiteSearch from "../../Assets/whiteSearch.png";
+import { ForecastItem, WeatherData } from "../../Types/Types";
+import WeatherBackgrounds from "../../Config/WeatherBackgrounds";
+import {
+  fetchWeather,
+  fetchWeatherByCoords,
+  fetchForecast,
+} from "../../api/weatherApi";
+import useLocation from "../../hooks/useLocation";
 
 function WeatherComponent() {
-  let api_key = "5638de59de20dae880f2595b6dd99aa1";
-
   const [wicon, setWicon] = useState<string>(cloud);
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
-
-  const rainGif = "https://media.giphy.com/media/l0Iy5fjHyedk9aDGU/giphy.gif";
-  const cloudGif = "https://media.giphy.com/media/1uLQUtPLbJMQ0/giphy.gif";
-  const drizzleGif =
-    "https://media.giphy.com/media/xT9GEOg09OuResnZ6g/giphy.gif";
-  const clearGif =
-    "https://media.giphy.com/media/7NRoRUOwM22OBAQS7L/giphy-downsized-large.gif";
-  const snowGif = "https://media.giphy.com/media/OWxrxRHY6afRu/giphy.gif";
-
-  const [backgroundImage, setBackgroundImage] = useState<string>(cloudGif);
-
+  const [backgroundImage, setBackgroundImage] = useState<string>(
+    "https://media.giphy.com/media/1uLQUtPLbJMQ0/giphy.gif"
+  );
   const [forecastData, setForecastData] = useState<ForecastItem[]>([]);
 
-  const weatherBackgrounds: WeatherBackgroundMap = {
-    "01": { icon: clear, background: clearGif },
-    "02": { icon: cloud, background: cloudGif },
-    "03": { icon: drizzle, background: drizzleGif },
-    "04": { icon: drizzle, background: drizzleGif },
-    "09": { icon: rain, background: rainGif },
-    "10": { icon: rain, background: rainGif },
-    "13": { icon: snow, background: snowGif },
-  };
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const fetchWeather = async (city: string) => {
-    try {
-      let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=Metric&appid=${api_key}`;
-      let response = await fetch(url);
-      let data = await response.json();
-      await updateWeatherData(data);
-    } catch (error) {
-      console.error("Error fetching weather data:", error);
-    }
-  };
+  const shouldFetchCurrentLocation = useRef(true);
 
-  const fetchWeatherByCoords = async (lat: number, lon: number) => {
-    try {
-      let url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=Metric&appid=${api_key}`;
-      let response = await fetch(url);
-      let data = await response.json();
-      await updateWeatherData(data);
-    } catch (error) {
-      console.error("Error fetching weather data:", error);
-    }
-  };
+  const updateWeatherData = useCallback(async (data: WeatherData) => {
+    setWeatherData(data);
+    const weatherCode = data.weather[0].icon.slice(0, 2);
+    const { icon, background } =
+      WeatherBackgrounds[weatherCode] || WeatherBackgrounds["02"];
+    setWicon(icon);
+    setBackgroundImage(background);
+    setForecastData(await processForecastData(data.name));
+  }, []);
 
-  const fetchForecast = async (city: string) => {
-    try {
-      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${api_key}&units=Metric`;
-      const response = await fetch(forecastUrl);
-      const data = await response.json();
+  const processForecastData = async (city: string): Promise<ForecastItem[]> => {
+    const data = await fetchForecast(city);
 
-      const dailyForecastMap: Record<string, ForecastItem[]> = {};
-
-      data.list.forEach((item: any) => {
-        const date = new Date(item.dt * 1000).toLocaleDateString();
-        if (!dailyForecastMap[date]) {
-          dailyForecastMap[date] = [];
-        }
-        const iconCode = item.weather[0].icon.substring(0, 2);
-        const icon = weatherBackgrounds[iconCode]?.icon || cloud;
-
-        dailyForecastMap[date].push({
-          date,
-          temp: item.main.temp,
-          icon: icon,
-        });
+    const dailyForecastMap: Record<string, ForecastItem[]> = {};
+    data.list.forEach((item: any) => {
+      const date = new Date(item.dt * 1000).toLocaleDateString();
+      if (!dailyForecastMap[date]) {
+        dailyForecastMap[date] = [];
+      }
+      const iconCode = item.weather[0].icon.substring(0, 2);
+      const icon = WeatherBackgrounds[iconCode]?.icon || cloud;
+      dailyForecastMap[date].push({
+        date,
+        temp: item.main.temp,
+        icon: icon,
       });
+    });
 
-      const processedForecast: ForecastItem[] = Object.keys(
-        dailyForecastMap
-      ).map((date) => {
+    return Object.keys(dailyForecastMap)
+      .map((date) => {
         const forecasts = dailyForecastMap[date];
         const avgTemp =
           forecasts.reduce((acc, item) => acc + item.temp, 0) /
           forecasts.length;
-
         return {
           date,
           temp: Math.round(avgTemp),
           icon: forecasts[Math.floor(forecasts.length / 2)].icon,
         };
-      });
-
-      setForecastData(processedForecast.slice(0, 6));
-    } catch (error) {
-      console.error("Error fetching forecast data:", error);
-    }
+      })
+      .slice(0, 5);
   };
 
-  const updateWeatherData = async (data: WeatherData) => {
-    setWeatherData(data);
-    const weatherCode = data.weather[0].icon.slice(0, 2);
-    const { icon, background } =
-      weatherBackgrounds[weatherCode] || weatherBackgrounds["02"];
-    setWicon(icon);
-    setBackgroundImage(background);
-
-    await fetchForecast(data.name);
-  };
-
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
+  useLocation(
+    useCallback(
+      (position) => {
+        if (shouldFetchCurrentLocation.current) {
           fetchWeatherByCoords(
             position.coords.latitude,
             position.coords.longitude
-          );
+          )
+            .then(updateWeatherData)
+            .catch(console.error);
+          shouldFetchCurrentLocation.current = false;
+        }
+      },
+      [updateWeatherData]
+    ),
+    useCallback((error) => {
+      console.error("Error getting location: ", error);
+    }, []),
+    shouldFetchCurrentLocation
+  );
+
+  const search = () => {
+    if (inputRef.current && inputRef.current.value !== "") {
+      fetchWeather(inputRef.current.value)
+        .then(updateWeatherData)
+        .catch(console.error);
+      shouldFetchCurrentLocation.current = false;
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      search();
+    }
+  };
+
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            const data = await fetchWeatherByCoords(
+              position.coords.latitude,
+              position.coords.longitude
+            );
+            updateWeatherData(data);
+          } catch (error) {
+            console.error("Error fetching weather data:", error);
+          }
         },
         (error) => {
           console.error("Error getting location: ", error);
@@ -133,26 +128,6 @@ function WeatherComponent() {
     }
   };
 
-  useEffect(() => {
-    getLocation();
-  }, []);
-
-  const search = () => {
-    const element = document.getElementsByClassName(
-      "city-input"
-    )[0] as HTMLInputElement;
-
-    if (element && element.value !== "") {
-      fetchWeather(element.value);
-    }
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      search();
-    }
-  };
-
   return (
     <div
       className="container"
@@ -160,6 +135,7 @@ function WeatherComponent() {
     >
       <div className="top-bar">
         <input
+          ref={inputRef}
           type="text"
           className="city-input"
           placeholder="Introduce a city name"
@@ -212,7 +188,10 @@ function WeatherComponent() {
         </div>
       </div>
       <div className="button-container">
-        <button onClick={getLocation} className="current-location-button">
+        <button
+          onClick={getCurrentLocation}
+          className="current-location-button"
+        >
           Get Current Location Weather
         </button>
       </div>
