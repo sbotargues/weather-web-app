@@ -54,6 +54,16 @@ function WeatherComponent() {
 
   const [forecastData, setForecastData] = useState<ForecastItem[]>([]);
 
+  const weatherBackgrounds: WeatherBackgroundMap = {
+    "01": { icon: clear, background: clearGif },
+    "02": { icon: cloud, background: cloudGif },
+    "03": { icon: drizzle, background: drizzleGif },
+    "04": { icon: drizzle, background: drizzleGif },
+    "09": { icon: rain, background: rainGif },
+    "10": { icon: rain, background: rainGif },
+    "13": { icon: snow, background: snowGif },
+  };
+
   const fetchWeather = async (city: string) => {
     try {
       let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=Metric&appid=${api_key}`;
@@ -89,10 +99,13 @@ function WeatherComponent() {
         if (!dailyForecastMap[date]) {
           dailyForecastMap[date] = [];
         }
+        const iconCode = item.weather[0].icon.substring(0, 2);
+        const icon = weatherBackgrounds[iconCode]?.icon || cloud;
+
         dailyForecastMap[date].push({
           date,
           temp: item.main.temp,
-          icon: `http://openweathermap.org/img/wn/${item.weather[0].icon}.png`,
+          icon: icon,
         });
       });
 
@@ -103,13 +116,11 @@ function WeatherComponent() {
         const avgTemp =
           forecasts.reduce((acc, item) => acc + item.temp, 0) /
           forecasts.length;
-        const representativeIcon =
-          forecasts[Math.floor(forecasts.length / 2)].icon;
 
         return {
           date,
           temp: Math.round(avgTemp),
-          icon: representativeIcon,
+          icon: forecasts[Math.floor(forecasts.length / 2)].icon,
         };
       });
 
@@ -117,16 +128,6 @@ function WeatherComponent() {
     } catch (error) {
       console.error("Error fetching forecast data:", error);
     }
-  };
-
-  const weatherBackgrounds: WeatherBackgroundMap = {
-    "01": { icon: clear, background: clearGif },
-    "02": { icon: cloud, background: cloudGif },
-    "03": { icon: drizzle, background: drizzleGif },
-    "04": { icon: drizzle, background: drizzleGif },
-    "09": { icon: rain, background: rainGif },
-    "10": { icon: rain, background: rainGif },
-    "13": { icon: snow, background: snowGif },
   };
 
   const updateWeatherData = async (data: WeatherData) => {

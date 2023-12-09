@@ -187,8 +187,8 @@
   }
   
   .forecast-day img {
-    width: 50px;
-    margin-bottom: 5px;
+    width: 40px;
+    margin: 5px;
   }
   
   .forecast-day p {
