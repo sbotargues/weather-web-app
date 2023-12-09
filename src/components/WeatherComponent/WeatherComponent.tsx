@@ -8,33 +8,7 @@ import wind from "../Assets/wind.png";
 import snow from "../Assets/snow.png";
 import humidityIcon from "../Assets/humidity.png";
 import whiteSearch from "../Assets/whiteSearch.png";
-
-interface WeatherData {
-  main: {
-    temp: number;
-    humidity: number;
-  };
-  weather: Array<{ icon: string }>;
-  wind: {
-    speed: number;
-  };
-  name: string;
-}
-
-interface WeatherBackground {
-  icon: string;
-  background: string;
-}
-
-interface WeatherBackgroundMap {
-  [key: string]: WeatherBackground;
-}
-
-interface ForecastItem {
-  date: string;
-  temp: number;
-  icon: string;
-}
+import { ForecastItem, WeatherBackgroundMap, WeatherData } from "../Types/Types";
 
 function WeatherComponent() {
   let api_key = "5638de59de20dae880f2595b6dd99aa1";

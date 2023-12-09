@@ -43,5 +43,3 @@ The component is styled using WeatherComponent.css, focusing on a clean and user
 - **Subcomponent Refactoring**: Further refactor the code into smaller subcomponents (e.g., WeatherDetails, WeatherBackground) for better maintainability and readability.
 - **Custom Hook for API Calls**: Implement a custom hook for API calls to streamline data fetching and state management.
 - **Enhanced Error Reporting**: Introduce more user-friendly error messages and notifications for a better user experience.
-- **Performance Optimization**: Implement lazy loading for GIFs and conditional rendering to enhance performance.
-- **Accessibility Improvements**: Increase accessibility by ensuring keyboard navigability and adding ARIA attributes.
