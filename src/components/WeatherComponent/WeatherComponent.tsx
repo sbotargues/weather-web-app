@@ -21,6 +21,21 @@ interface WeatherData {
   name: string;
 }
 
+interface WeatherBackground {
+  icon: string;
+  background: string;
+}
+
+interface WeatherBackgroundMap {
+  [key: string]: WeatherBackground;
+}
+
+interface ForecastItem {
+  date: string;
+  temp: number;
+  icon: string;
+}
+
 function WeatherComponent() {
   let api_key = "5638de59de20dae880f2595b6dd99aa1";
 
@@ -37,12 +52,14 @@ function WeatherComponent() {
 
   const [backgroundImage, setBackgroundImage] = useState<string>(cloudGif);
 
+  const [forecastData, setForecastData] = useState<ForecastItem[]>([]);
+
   const fetchWeather = async (city: string) => {
     try {
       let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=Metric&appid=${api_key}`;
       let response = await fetch(url);
       let data = await response.json();
-      updateWeatherData(data);
+      await updateWeatherData(data);
     } catch (error) {
       console.error("Error fetching weather data:", error);
     }
@@ -53,20 +70,54 @@ function WeatherComponent() {
       let url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=Metric&appid=${api_key}`;
       let response = await fetch(url);
       let data = await response.json();
-      updateWeatherData(data);
+      await updateWeatherData(data);
     } catch (error) {
       console.error("Error fetching weather data:", error);
     }
   };
 
-  interface WeatherBackground {
-    icon: string;
-    background: string;
-  }
+  const fetchForecast = async (city: string) => {
+    try {
+      const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${api_key}&units=Metric`;
+      const response = await fetch(forecastUrl);
+      const data = await response.json();
 
-  interface WeatherBackgroundMap {
-    [key: string]: WeatherBackground;
-  }
+      const dailyForecastMap: Record<string, ForecastItem[]> = {};
+
+      data.list.forEach((item: any) => {
+        const date = new Date(item.dt * 1000).toLocaleDateString();
+        if (!dailyForecastMap[date]) {
+          dailyForecastMap[date] = [];
+        }
+        dailyForecastMap[date].push({
+          date,
+          temp: item.main.temp,
+          icon: `http://openweathermap.org/img/wn/${item.weather[0].icon}.png`,
+        });
+      });
+
+      const processedForecast: ForecastItem[] = Object.keys(
+        dailyForecastMap
+      ).map((date) => {
+        const forecasts = dailyForecastMap[date];
+        const avgTemp =
+          forecasts.reduce((acc, item) => acc + item.temp, 0) /
+          forecasts.length;
+        const representativeIcon =
+          forecasts[Math.floor(forecasts.length / 2)].icon;
+
+        return {
+          date,
+          temp: Math.round(avgTemp),
+          icon: representativeIcon,
+        };
+      });
+
+      setForecastData(processedForecast.slice(0, 6));
+    } catch (error) {
+      console.error("Error fetching forecast data:", error);
+    }
+  };
 
   const weatherBackgrounds: WeatherBackgroundMap = {
     "01": { icon: clear, background: clearGif },
@@ -78,13 +129,15 @@ function WeatherComponent() {
     "13": { icon: snow, background: snowGif },
   };
 
-  const updateWeatherData = (data: WeatherData) => {
+  const updateWeatherData = async (data: WeatherData) => {
     setWeatherData(data);
     const weatherCode = data.weather[0].icon.slice(0, 2);
     const { icon, background } =
       weatherBackgrounds[weatherCode] || weatherBackgrounds["02"];
     setWicon(icon);
     setBackgroundImage(background);
+
+    await fetchForecast(data.name);
   };
 
   const getLocation = () => {
@@ -172,6 +225,15 @@ function WeatherComponent() {
               <div className="text">Wind Speed</div>
             </div>
           </div>
+        </div>
+        <div className="forecast-container">
+          {forecastData.map((day, index) => (
+            <div key={index} className="forecast-day">
+              <p>{day.date}</p>
+              <img src={day.icon} alt="Weather Icon" />
+              <p>{day.temp} °C</p>
+            </div>
+          ))}
         </div>
       </div>
       <div className="button-container">
