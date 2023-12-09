@@ -21,7 +21,7 @@ Before you begin, ensure you have met the following requirements:
 To install Weather App, follow these steps:
 
 1. Clone the repository:
-   git clone https://your-repository-url.git
+   git clone https://github.com/sbotargues/weather-web-app.git
 2. Navigate to the repository directory
    cd weather-web-app
 3. Install dependencies
