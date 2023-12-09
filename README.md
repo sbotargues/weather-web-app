@@ -4,6 +4,10 @@
 
 This Weather App is a React-based web application that provides real-time weather information and forecasts. Users can search for weather updates by city or use their current location.
 
+This is the live APP deployed with Vercel
+
+https://weather-web-app-kappa.vercel.app/
+
 ## Getting Started
 
 ### Prerequisites
