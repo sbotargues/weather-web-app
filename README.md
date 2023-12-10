@@ -36,7 +36,7 @@ To start using Weather App, follow these steps:
 - **Type-Safe Data Handling**: Implements interfaces for structured and predictable data management.
 - **Interactive Search Functionality**: Includes a search bar for city-based weather queries, enhancing user interaction.
 - **Geolocation Support**: Automatically fetches weather data based on the user's current location on initial load.
-- **Responsive and Dynamic Backgrounds**: The background changes dynamically to reflect the current weather condition using GIFs from Giphy.
+- **Dynamic Backgrounds**: The background changes dynamically to reflect the current weather condition using GIFs from Giphy.
 - **Error Handling**: Robust error handling for API calls and geolocation services.
 
 ## Styling
@@ -46,4 +46,4 @@ The component is styled using WeatherComponent.css, focusing on a clean and user
 ## Future Improvements
 - **Enhanced Error Reporting**: Introduce more user-friendly error messages and notifications for a better user experience.
 - **Mobile Responsive**
-- **Separe css files**: Split the css file in their corresponding component for a better readability.
+- **Split css files**: Split the css file in their corresponding component for a better readability.
