@@ -1,4 +1,3 @@
-// src/api/weatherApi.ts
 const API_KEY = "5638de59de20dae880f2595b6dd99aa1";
 
 const fetchWeather = async (city: string) => {

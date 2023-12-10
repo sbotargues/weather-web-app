@@ -1,4 +1,3 @@
-// src/components/WeatherComponent.tsx
 import React, { useState, useRef, useCallback } from "react";
 import "./WeatherComponent.css";
 import cloud from "../Assets/cloud.png";

@@ -44,6 +44,4 @@ To start using Weather App, follow these steps:
 The component is styled using WeatherComponent.css, focusing on a clean and user-friendly interface that complements the application's functionality.
 
 ## Future Improvements
-
-- **Subcomponent Refactoring**: Further refactor the code into smaller subcomponents for better maintainability and readability.
 - **Enhanced Error Reporting**: Introduce more user-friendly error messages and notifications for a better user experience.

@@ -1,5 +1,5 @@
 import React, { RefObject } from "react";
-import whiteSearch from "../../Assets/whiteSearch.png"; // Asegúrate de que esta ruta sea correcta
+import whiteSearch from "../../Assets/whiteSearch.png";
 
 interface SearchBarProps {
   inputRef: RefObject<HTMLInputElement>;
