@@ -24,3 +24,16 @@ export interface ForecastItem {
   temp: number;
   icon: string;
 }
+
+
+export interface ForecastContainerProps {
+  forecastData: ForecastItem[];
+}
+
+export interface DataContainerProps {
+  weatherData: WeatherData | null;
+}
+
+export interface CurrentLocationButtonProps {
+  updateWeatherData: (data: WeatherData) => Promise<void>;
+}
