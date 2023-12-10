@@ -45,3 +45,5 @@ The component is styled using WeatherComponent.css, focusing on a clean and user
 
 ## Future Improvements
 - **Enhanced Error Reporting**: Introduce more user-friendly error messages and notifications for a better user experience.
+- **Mobile Responsive**
+- **Separe css files**: Split the css file in their corresponding component for a better readability.
